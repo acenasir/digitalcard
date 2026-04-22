@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cards     BusinessCard[]
+}
+
+model BusinessCard {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String   @unique
+  displayName String
+  title       String?
+  company     String?
+  email       String?
+  phone       String?
+  website     String?
+  linkedin    String?
+  twitter     String?
+  github      String?
+  bio         String?
+  logoUrl     String?
+  bgColor     String   @default("#1e3a8a")
+  fgColor     String   @default("#ffffff")
+  accentColor String   @default("#60a5fa")
+  isPublic    Boolean  @default(true)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  passes      WalletPass[]
+}
+
+model WalletPass {
+  id             String   @id @default(cuid())
+  cardId         String
+  card           BusinessCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  platform       String
+  serialNumber   String   @unique
+  passUrl        String?
+  googleObjectId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
